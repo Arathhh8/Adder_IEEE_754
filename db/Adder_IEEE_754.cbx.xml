@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<LOG_ROOT>
+	<PROJECT NAME="Adder_IEEE_754">
+		<CBX_INST_ENTRY INSTANCE_NAME="|Adder_IEEE_754|lpm_mult:Mult0" CBX_FILE_NAME="mult_p8t.tdf"/>
+	</PROJECT>
+</LOG_ROOT>

@@ -1,0 +1,53 @@
+------------------------------------------------------------
+TimeQuest Timing Analyzer Summary
+------------------------------------------------------------
+
+Type  : Slow Model Setup 'clock_generator:BAUDRATE|clock_signal'
+Slack : -18.198
+TNS   : -935.791
+
+Type  : Slow Model Setup 'clk'
+Slack : -2.847
+TNS   : -28.344
+
+Type  : Slow Model Hold 'clk'
+Slack : -2.522
+TNS   : -2.522
+
+Type  : Slow Model Hold 'clock_generator:BAUDRATE|clock_signal'
+Slack : 0.499
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'clock_generator:BAUDRATE|clock_signal'
+Slack : -2.269
+TNS   : -564.176
+
+Type  : Slow Model Minimum Pulse Width 'clk'
+Slack : -1.941
+TNS   : -22.717
+
+Type  : Fast Model Setup 'clock_generator:BAUDRATE|clock_signal'
+Slack : -4.240
+TNS   : -151.845
+
+Type  : Fast Model Setup 'clk'
+Slack : -0.318
+TNS   : -1.341
+
+Type  : Fast Model Hold 'clk'
+Slack : -1.332
+TNS   : -1.332
+
+Type  : Fast Model Hold 'clock_generator:BAUDRATE|clock_signal'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'clock_generator:BAUDRATE|clock_signal'
+Slack : -1.519
+TNS   : -378.736
+
+Type  : Fast Model Minimum Pulse Width 'clk'
+Slack : -1.380
+TNS   : -15.380
+
+------------------------------------------------------------

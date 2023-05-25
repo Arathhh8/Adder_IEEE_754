@@ -1,0 +1,26 @@
+
+State Machine - |Adder_IEEE_754|ps_tx
+Name ps_tx.b8 ps_tx.b7 ps_tx.b6 ps_tx.b5 ps_tx.b4 ps_tx.b3 ps_tx.b2 ps_tx.b1 ps_tx.b0 ps_tx.ready 
+ps_tx.ready 0 0 0 0 0 0 0 0 0 0 
+ps_tx.b0 0 0 0 0 0 0 0 0 1 1 
+ps_tx.b1 0 0 0 0 0 0 0 1 0 1 
+ps_tx.b2 0 0 0 0 0 0 1 0 0 1 
+ps_tx.b3 0 0 0 0 0 1 0 0 0 1 
+ps_tx.b4 0 0 0 0 1 0 0 0 0 1 
+ps_tx.b5 0 0 0 1 0 0 0 0 0 1 
+ps_tx.b6 0 0 1 0 0 0 0 0 0 1 
+ps_tx.b7 0 1 0 0 0 0 0 0 0 1 
+ps_tx.b8 1 0 0 0 0 0 0 0 0 1 
+
+State Machine - |Adder_IEEE_754|ps_rx
+Name ps_rx.b8 ps_rx.b7 ps_rx.b6 ps_rx.b5 ps_rx.b4 ps_rx.b3 ps_rx.b2 ps_rx.b1 ps_rx.b0 ps_rx.ready 
+ps_rx.ready 0 0 0 0 0 0 0 0 0 0 
+ps_rx.b0 0 0 0 0 0 0 0 0 1 1 
+ps_rx.b1 0 0 0 0 0 0 0 1 0 1 
+ps_rx.b2 0 0 0 0 0 0 1 0 0 1 
+ps_rx.b3 0 0 0 0 0 1 0 0 0 1 
+ps_rx.b4 0 0 0 0 1 0 0 0 0 1 
+ps_rx.b5 0 0 0 1 0 0 0 0 0 1 
+ps_rx.b6 0 0 1 0 0 0 0 0 0 1 
+ps_rx.b7 0 1 0 0 0 0 0 0 0 1 
+ps_rx.b8 1 0 0 0 0 0 0 0 0 1 
