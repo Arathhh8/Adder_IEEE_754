@@ -20,13 +20,6 @@ component clock_generator is
 	clock_in: in std_logic;
 	clock_out: out std_logic);
 end component;
-
---component IEEE754_PROD is
---    Port ( x : in  STD_LOGIC_VECTOR (31 downto 0);
---           y : in  STD_LOGIC_VECTOR (31 downto 0);
---           z : out  STD_LOGIC_VECTOR (31 downto 0));
---end component;
-
 	
 	
 type state is (ready,b0,b1,b2,b3,b4,b5,b6,b7,b8);   ----fsm PARA RECEPCION
@@ -43,11 +36,6 @@ signal y : std_logic_vector(31 downto 0); --:= "01000000000000000000000000000000
 signal z_signal : std_logic_vector(31 downto 0);
 
 begin
-
-
---
---MULTIPLIER:IEEE754_PROD
---port map(data_rx(63 downto 32),data_rx(31 downto 0), producto);
 
 BAUDRATE:clock_generator
 port map(clk, s_baudclock);
@@ -144,8 +132,8 @@ port map(clk, s_baudclock);
 	elsif s_baudclock'event and s_baudclock = '1' then
 		if ps_tx = ready then  
 			if start_tx='1' then
-				x <= data_rx(63 downto 32);
-				y <= data_rx(31 downto 0);
+--				x <= data_rx(63 downto 32);
+--				y <= data_rx(31 downto 0);
 				if count_byte_tx<4 then
 					tx<='0';
 					if count_byte_tx=0 then
@@ -223,80 +211,76 @@ port map(clk, s_baudclock);
 		'0';
 	-----------------------------------------------------------------
 	
-	process(x,y)
-		variable x_mantissa : STD_LOGIC_VECTOR (22 downto 0);
-		variable x_exponent : STD_LOGIC_VECTOR (7 downto 0);
-		variable x_sign : STD_LOGIC;
-		variable y_mantissa : STD_LOGIC_VECTOR (22 downto 0);
-		variable y_exponent : STD_LOGIC_VECTOR (7 downto 0);
-		variable y_sign : STD_LOGIC;
-		variable z_mantissa : STD_LOGIC_VECTOR (22 downto 0);
-		variable z_exponent : STD_LOGIC_VECTOR (7 downto 0);
-		variable z_sign : STD_LOGIC;
-		variable aux : STD_LOGIC;
-		variable aux2 : STD_LOGIC_VECTOR (47 downto 0);
-		variable exponent_sum : STD_LOGIC_VECTOR (8 downto 0);
-   begin
-		x_mantissa := x(22 downto 0);
-		x_exponent := x(30 downto 23);
-		x_sign := x(31);
-		y_mantissa := y(22 downto 0);
-		y_exponent := y(30 downto 23);
-		y_sign := y(31);
-	
-		-- inf*0 is not tested (result would be NaN)
-		if (x_exponent=255 or y_exponent=255) then 
-		-- inf*x or x*inf
-			z_exponent := "11111111";
-			z_mantissa := (others => '0');
-			z_sign := x_sign xor y_sign;
-			
-		elsif (x_exponent=0 or y_exponent=0) then 
-		-- 0*x or x*0
-			z_exponent := (others => '0');
-			z_mantissa := (others => '0');
-			z_sign := '0';
-		else
-			
-			aux2 := ('1' & x_mantissa) * ('1' & y_mantissa);
-			-- args in Q23 result in Q46
-			if (aux2(47)='1') then 
-				-- >=2, shift left and add one to exponent
-				z_mantissa := aux2(46 downto 24) + aux2(23); -- with rounding
-				aux := '1';
-			else
-				z_mantissa := aux2(45 downto 23) + aux2(22); -- with rounding
-				aux := '0';
-			end if;
-			
-			-- calculate exponent
-			exponent_sum := ('0' & x_exponent) + ('0' & y_exponent) + aux - 127;
-			
-			if (exponent_sum(8)='1') then 
-				if (exponent_sum(7)='0') then -- overflow
-					z_exponent := "11111111";
-					z_mantissa := (others => '0');
-					z_sign := x_sign xor y_sign;
-				else 									-- underflow
-					z_exponent := (others => '0');
-					z_mantissa := (others => '0');
-					z_sign := '0';
-				end if;
-			else								  		 -- Ok
-				z_exponent := exponent_sum(7 downto 0);
-				z_sign := x_sign xor y_sign;
-			end if;
-		end if;
-		
+process(data_rx)
+    variable x_mantissa : STD_LOGIC_VECTOR (22 downto 0);
+    variable x_exponent : STD_LOGIC_VECTOR (7 downto 0);
+    variable x_sign : STD_LOGIC;
+    variable y_mantissa : STD_LOGIC_VECTOR (22 downto 0);
+    variable y_exponent : STD_LOGIC_VECTOR (7 downto 0);
+    variable y_sign : STD_LOGIC;
+    variable z_mantissa : STD_LOGIC_VECTOR (22 downto 0);
+    variable z_exponent : STD_LOGIC_VECTOR (7 downto 0);
+    variable z_sign : STD_LOGIC;
+    variable aux : STD_LOGIC;
+    variable aux2 : STD_LOGIC_VECTOR (47 downto 0);
+    variable exponent_sum : STD_LOGIC_VECTOR (8 downto 0);
+begin
+    x_mantissa := data_rx(63 downto 41);
+    x_exponent := data_rx(40 downto 33);
+    x_sign := data_rx(31);
+    y_mantissa := data_rx(31 downto 9);
+    y_exponent := data_rx(8 downto 1);
+    y_sign := data_rx(0);
 
-		z(22 downto 0) <= z_mantissa;
-		z(30 downto 23) <= z_exponent;
-		z(31) <= z_sign;
+    -- inf*0 is not tested (result would be NaN)
+    if (x_exponent=255 or y_exponent=255) then 
+        -- inf*x or x*inf
+        z_exponent := "11111111";
+        z_mantissa := (others => '0');
+        z_sign := x_sign xor y_sign;
+    elsif (x_exponent=0 or y_exponent=0) then 
+        -- 0*x or x*0
+        z_exponent := (others => '0');
+        z_mantissa := (others => '0');
+        z_sign := '0';
+    else
+        aux2 := ('1' & x_mantissa) * ('1' & y_mantissa);
+        -- args in Q23 result in Q46
+        if (aux2(47)='1') then 
+            -- >=2, shift left and add one to exponent
+            z_mantissa := aux2(46 downto 24) + aux2(23); -- with rounding
+            aux := '1';
+        else
+            z_mantissa := aux2(45 downto 23) + aux2(22); -- with rounding
+            aux := '0';
+        end if;
 
-		z_signal(22 downto 0) <= z_mantissa;
-		z_signal(30 downto 23) <= z_exponent;
-		z_signal(31) <= z_sign;
-		
-   end process;
+        -- calculate exponent
+        exponent_sum := ('0' & x_exponent) + ('0' & y_exponent) + aux - 127;
+
+        if (exponent_sum(8)='1') then 
+            if (exponent_sum(7)='0') then -- overflow
+                z_exponent := "11111111";
+                z_mantissa := (others => '0');
+                z_sign := x_sign xor y_sign;
+            else  -- underflow
+                z_exponent := (others => '0');
+                z_mantissa := (others => '0');
+                z_sign := '0';
+            end if;
+        else  -- Ok
+            z_exponent := exponent_sum(7 downto 0);
+            z_sign := x_sign xor y_sign;
+        end if;
+    end if;
+
+    z(22 downto 0) <= z_mantissa;
+    z(30 downto 23) <= z_exponent;
+    z(31) <= z_sign;
+    
+    -- Resto del código del proceso
+
+end process;
+
 	
 end Behavioral;
