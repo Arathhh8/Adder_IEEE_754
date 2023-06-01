@@ -6,8 +6,9 @@ entity Adder_IEEE_754 is
 
 	port 
 	(
-	clk, rx, reset, start_tx: in STD_LOGIC;
-	tx, end_rx, end_tx:out std_logic;
+	clk, rx, reset : in STD_LOGIC;
+	start_tx : buffer std_logic;
+	tx, end_rx, end_tx : out std_logic;
 	z : out std_logic_vector(31 downto 0));
 
 end Adder_IEEE_754;
@@ -34,6 +35,7 @@ signal s_baudclock: std_logic;
 signal x : std_logic_vector(31 downto 0); --:= "01001101000000000011011101010111";
 signal y : std_logic_vector(31 downto 0); --:= "01000000000000000000000000000000";
 signal z_signal : std_logic_vector(31 downto 0);
+signal number_counter : std_logic_vector(1 downto 0) := "00";
 
 begin
 
@@ -132,15 +134,24 @@ port map(clk, s_baudclock);
 	elsif s_baudclock'event and s_baudclock = '1' then
 		if ps_tx = ready then  
 			if start_tx='1' then
---				x <= data_rx(63 downto 32);
---				y <= data_rx(31 downto 0);
 				if count_byte_tx<4 then
 					tx<='0';
 					if count_byte_tx=0 then
-						-- data_tx <= producto; -- No funciona
+						if number_counter = "00" then
+							number_counter <= "01";
+							data_tx <= data_rx(63 downto 32);
+						end if;
+						if number_counter = "01" then
+							number_counter <= "10";
+							data_tx <= data_rx(31 downto 0);
+						end if;
+						if number_counter = "10" then
+							number_counter <= "00";
+							data_tx <= z_signal(31 downto 0);
+						end if;
 						-- data_tx <= data_rx(63 downto 32); -- Funciona
-						--data_tx <= data_rx(31 downto 0); -- Funciona
-						data_tx <= z_signal(31 downto 0);
+						-- data_tx <= data_rx(31 downto 0); -- Funciona
+						-- data_tx <= z_signal(31 downto 0);
 					end if;
 					ps_tx <= b0;
 				else
@@ -199,6 +210,11 @@ port map(clk, s_baudclock);
 			count_byte_tx <= count_byte_tx + 1;
 			ps_tx <= ready;				
 
+			-- Reset the counter_byte_tx until number_counter = 10
+			if number_counter = "00" or number_counter = "01" and count_byte_tx = 4 then
+				count_byte_tx <= "000";
+				start_tx <= '1'; -- Force the transmision of the next number
+			end if;
 		end if;
 
 	-------------------------------------1
